@@ -1,5 +1,7 @@
-# $Id: BasiliskII.spec,v 1.1 2008/10/18 13:57:38 thl Exp $
+# $Id: BasiliskII.spec,v 1.2 2008/10/18 14:21:26 thl Exp $
 # Authority: dag
+
+%define _default_patch_fuzz 2
 
 %define date 20060501
 %define inv_date 01052006
@@ -116,6 +118,7 @@ desktop-file-install --vendor %{desktop_vendor} \
 %changelog
 * Sat Oct 18 2008 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info - 1.0-0.20060501.1.fc7.1
 - rebuild for RPM Fusion
+- _default_patch_fuzz 2
 
 * Wed Mar  7 2007 Matthias Saou <http://freshrpms.net/> 1.0-0.20060501.1
 - Update to 01052006.
