@@ -1,35 +1,15 @@
-# $Id: BasiliskII.spec,v 1.3 2008/10/18 14:22:46 thl Exp $
-# Authority: dag
-
 %define _default_patch_fuzz 2
 
 %define date 20060501
 %define inv_date 01052006
 %define mon_version 3.1
 %define desktop_vendor rpmforge
-
-%{?dist: %{expand: %%define %dist 1}}
-%{?fedora: %{expand: %%define fc%{fedora} 1}}
-
-%{!?dist:%define _with_banks 1}
-%{?el5:  %define _with_banks 1}
-%{?fc7:  %define _with_banks 1}
-%{?fc6:  %define _with_banks 1}
-%{?fc5:  %define _with_banks 1}
-%{?fc4:  %define _with_banks 1}
-%{?el4:  %define _with_banks 1}
-%{?fc3:  %define _with_banks 1}
-
-%{!?dist:%define _with_modxorg 1}
-%{?el5:  %define _with_modxorg 1}
-%{?fc7:  %define _with_modxorg 1}
-%{?fc6:  %define _with_modxorg 1}
-%{?fc5:  %define _with_modxorg 1}
+%define _with_banks 1
 
 Summary: 68k Macintosh emulator
 Name: BasiliskII
 Version: 1.0
-Release: 0.%{date}.2
+Release: 0.%{date}.2%{?dist}
 License: GPL
 Group: Applications/Emulators
 URL: http://gwenole.beauchesne.info/projects/basilisk2/
@@ -40,7 +20,7 @@ Patch: BasiliskII-1.0-nostrip.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: gcc-c++, gtk2-devel, esound-devel >= 0.2.8
 BuildRequires: desktop-file-utils, readline-devel
-%{?_with_modxorg:BuildRequires: libXt-devel, libXxf86dga-devel, libXxf86vm-devel}
+BuildRequires: libXt-devel, libXxf86dga-devel, libXxf86vm-devel
 %{?_with_sdl:BuildRequires: SDL-devel}
 
 %description
@@ -50,7 +30,7 @@ different operating system. However, you still need a copy of MacOS and
 a Macintosh ROM image to use Basilisk II.
 
 Available rebuild options :
---with    : sdl banks modxorg
+--with    : sdl banks
 --without : mon
 
 
@@ -119,6 +99,7 @@ desktop-file-install --vendor %{desktop_vendor} \
 * Sat Oct 18 2008 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info - 1.0-0.20060501.2
 - rebuild for RPM Fusion
 - _default_patch_fuzz 2
+- remove support for building against XFree86
 
 * Wed Mar  7 2007 Matthias Saou <http://freshrpms.net/> 1.0-0.20060501.1
 - Update to 01052006.
