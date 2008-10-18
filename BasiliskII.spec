@@ -1,4 +1,4 @@
-# $Id: BasiliskII.spec,v 1.2 2008/10/18 14:21:26 thl Exp $
+# $Id: BasiliskII.spec,v 1.3 2008/10/18 14:22:46 thl Exp $
 # Authority: dag
 
 %define _default_patch_fuzz 2
@@ -29,7 +29,7 @@
 Summary: 68k Macintosh emulator
 Name: BasiliskII
 Version: 1.0
-Release: 0.%{date}.1.fc7.1
+Release: 0.%{date}.2
 License: GPL
 Group: Applications/Emulators
 URL: http://gwenole.beauchesne.info/projects/basilisk2/
@@ -116,7 +116,7 @@ desktop-file-install --vendor %{desktop_vendor} \
 
 
 %changelog
-* Sat Oct 18 2008 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info - 1.0-0.20060501.1.fc7.1
+* Sat Oct 18 2008 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info - 1.0-0.20060501.2
 - rebuild for RPM Fusion
 - _default_patch_fuzz 2
 
