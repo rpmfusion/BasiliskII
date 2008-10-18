@@ -1,0 +1,11 @@
+diff -up BasiliskII-1.0/src/Unix/sys_unix.cpp~ BasiliskII-1.0/src/Unix/sys_unix.cpp
+--- BasiliskII-1.0/src/Unix/sys_unix.cpp~	2008-10-18 20:01:47.000000000 +0200
++++ BasiliskII-1.0/src/Unix/sys_unix.cpp	2008-10-18 20:01:47.000000000 +0200
+@@ -23,6 +23,7 @@
+ #include <sys/ioctl.h>
+ #include <sys/stat.h>
+ #include <errno.h>
++#include <limits.h>
+ 
+ #ifdef HAVE_AVAILABILITYMACROS_H
+ #include <AvailabilityMacros.h>

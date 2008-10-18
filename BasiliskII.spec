@@ -1,22 +1,21 @@
-%define _default_patch_fuzz 2
-
 %define date 20060501
 %define inv_date 01052006
-%define mon_version 3.1
+%define mon_version 3.2
 %define desktop_vendor rpmforge
 %define _with_banks 1
 
 Summary: 68k Macintosh emulator
 Name: BasiliskII
 Version: 1.0
-Release: 0.%{date}.2%{?dist}
-License: GPL
+Release: 0.%{date}.3%{?dist}
+License: GPLv2+
 Group: Applications/Emulators
 URL: http://gwenole.beauchesne.info/projects/basilisk2/
 Source0: http://gwenole.beauchesne.info/projects/basilisk2/files/BasiliskII_src_%{inv_date}.tar.bz2
-Source1: http://wwwthep.physik.uni-mainz.de/~cbauer/cxmon-%{mon_version}.tar.gz
+Source1: http://cxmon.cebix.net/downloads/cxmon-%{mon_version}.tar.gz
 Source2: BasiliskII.png
-Patch: BasiliskII-1.0-nostrip.patch
+Patch0: BasiliskII-1.0-nostrip.patch
+Patch1: BasiliskII-1.0-gcc43.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: gcc-c++, gtk2-devel, esound-devel >= 0.2.8
 BuildRequires: desktop-file-utils, readline-devel
@@ -35,8 +34,13 @@ Available rebuild options :
 
 
 %prep
-%setup -a 1
-%patch -p1 -b .nostrip
+%setup -q -a 1
+%patch0 -p1 -b .nostrip
+%patch1 -p1 -b .gcc43
+iconv -f ISO_8859-1 -t UTF8 README > README.tmp
+touch -r README README.tmp; mv README.tmp README
+iconv -f ISO_8859-1 -t UTF8 ChangeLog > ChangeLog.tmp
+touch -r ChangeLog ChangeLog.tmp; mv ChangeLog.tmp ChangeLog
 
 
 %build
@@ -55,6 +59,7 @@ popd
 %{__rm} -rf %{buildroot}
 %makeinstall -C src/Unix \
     datadir="%{buildroot}%{_sysconfdir}"
+chmod +x %{buildroot}%{_sysconfdir}/%{name}/tunconfig
 
 # Create the system menu entry
 %{__cat} > %{name}.desktop << EOF
@@ -65,8 +70,7 @@ Exec=BasiliskII
 Icon=BasiliskII.png
 Terminal=false
 Type=Application
-Categories=Application;Utility;
-Encoding=UTF-8
+Categories=Game;Emulator;
 EOF
 
 %{__mkdir_p} %{buildroot}%{_datadir}/applications
@@ -86,9 +90,9 @@ desktop-file-install --vendor %{desktop_vendor} \
 %defattr(-, root, root, 0755)
 %doc ChangeLog COPYING README TECH TODO
 %dir %{_sysconfdir}/BasiliskII/
-%config %{_sysconfdir}/BasiliskII/fbdevices
-%config %{_sysconfdir}/BasiliskII/keycodes
-%config %{_sysconfdir}/BasiliskII/tunconfig
+%config(noreplace) %{_sysconfdir}/BasiliskII/fbdevices
+%config(noreplace) %{_sysconfdir}/BasiliskII/keycodes
+%{_sysconfdir}/BasiliskII/tunconfig
 %{_bindir}/BasiliskII
 %{_datadir}/pixmaps/BasiliskII.png
 %{_datadir}/applications/%{desktop_vendor}-%{name}.desktop
@@ -96,6 +100,14 @@ desktop-file-install --vendor %{desktop_vendor} \
 
 
 %changelog
+* Sat Oct 18 2008 Hans de Goede <j.w.r.degoede@hhs.nl> - 1.0-0.20060501.3
+- Updated release of cxmon to 3.2
+- Fix compilation with latest stdlibc++
+- Regenerate Patch0, nuke _default_patch_fuzz 2
+- Fixup desktop file Categories, so that Basilisk will show up under the
+  Emulators menu where it belongs
+- Make rpmlint like this package
+
 * Sat Oct 18 2008 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info - 1.0-0.20060501.2
 - rebuild for RPM Fusion
 - _default_patch_fuzz 2
