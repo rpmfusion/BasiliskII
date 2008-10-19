@@ -1,0 +1,12 @@
+diff -up BasiliskII-1.0/src/Unix/Makefile.in.nostrip BasiliskII-1.0/src/Unix/Makefile.in
+--- BasiliskII-1.0/src/Unix/Makefile.in.nostrip	2006-04-19 08:55:54.000000000 +0200
++++ BasiliskII-1.0/src/Unix/Makefile.in	2008-10-18 20:12:57.000000000 +0200
+@@ -28,7 +28,7 @@ CPUSRCS = @CPUSRCS@
+ BLESS = @BLESS@
+ EXEEXT = @EXEEXT@
+ INSTALL = @INSTALL@
+-INSTALL_PROGRAM = @INSTALL_PROGRAM@ -s
++INSTALL_PROGRAM = @INSTALL_PROGRAM@
+ INSTALL_DATA = @INSTALL_DATA@
+ 
+ SLIRP_CFLAGS = @SLIRP_CFLAGS@
