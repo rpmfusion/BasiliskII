@@ -7,7 +7,7 @@
 Summary: 68k Macintosh emulator
 Name: BasiliskII
 Version: 1.0
-Release: 0.%{date}.3%{?dist}
+Release: 0.%{date}.3%{?dist}.1
 License: GPLv2+
 Group: Applications/Emulators
 URL: http://gwenole.beauchesne.info/projects/basilisk2/
@@ -100,6 +100,9 @@ desktop-file-install --vendor %{desktop_vendor} \
 
 
 %changelog
+* Sun Mar 29 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 1.0-0.20060501.3.1
+- rebuild for new F11 features
+
 * Sat Oct 18 2008 Hans de Goede <j.w.r.degoede@hhs.nl> - 1.0-0.20060501.3
 - Updated release of cxmon to 3.2
 - Fix compilation with latest stdlibc++
