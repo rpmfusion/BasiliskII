@@ -7,7 +7,7 @@
 Summary: 68k Macintosh emulator
 Name: BasiliskII
 Version: 1.0
-Release: 0.%{date}.3%{?dist}.1
+Release: 0.%{date}.3%{?dist}.2
 License: GPLv2+
 Group: Applications/Emulators
 URL: http://gwenole.beauchesne.info/projects/basilisk2/
@@ -100,6 +100,9 @@ desktop-file-install --vendor %{desktop_vendor} \
 
 
 %changelog
+* Wed Feb 08 2012 Nicolas Chauvet <kwizart@gmail.com> - 1.0-0.20060501.3.2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
 * Sun Mar 29 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 1.0-0.20060501.3.1
 - rebuild for new F11 features
 
