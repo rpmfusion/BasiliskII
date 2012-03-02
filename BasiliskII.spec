@@ -7,7 +7,7 @@
 Summary: 68k Macintosh emulator
 Name: BasiliskII
 Version: 1.0
-Release: 0.%{date}.3%{?dist}.2
+Release: 0.%{date}.3%{?dist}.3
 License: GPLv2+
 Group: Applications/Emulators
 URL: http://gwenole.beauchesne.info/projects/basilisk2/
@@ -100,6 +100,9 @@ desktop-file-install --vendor %{desktop_vendor} \
 
 
 %changelog
+* Fri Mar 02 2012 Nicolas Chauvet <kwizart@gmail.com> - 1.0-0.20060501.3.3
+- Rebuilt for c++ ABI breakage
+
 * Wed Feb 08 2012 Nicolas Chauvet <kwizart@gmail.com> - 1.0-0.20060501.3.2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
 
