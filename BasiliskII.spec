@@ -1,26 +1,23 @@
-%define date 20060501
-%define inv_date 01052006
+%define date 20130310
 %define mon_version 3.2
-%define desktop_vendor rpmforge
-%define _with_banks 1
 
-Summary: 68k Macintosh emulator
-Name: BasiliskII
-Version: 1.0
-Release: 0.%{date}.3%{?dist}.4
-License: GPLv2+
-Group: Applications/Emulators
-URL: http://gwenole.beauchesne.info/projects/basilisk2/
-Source0: http://gwenole.beauchesne.info/projects/basilisk2/files/BasiliskII_src_%{inv_date}.tar.bz2
-Source1: http://cxmon.cebix.net/downloads/cxmon-%{mon_version}.tar.gz
-Source2: BasiliskII.png
-Patch0: BasiliskII-1.0-nostrip.patch
-Patch1: BasiliskII-1.0-gcc43.patch
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-BuildRequires: gcc-c++, gtk2-devel, esound-devel >= 0.2.8
-BuildRequires: desktop-file-utils, readline-devel
-BuildRequires: libXt-devel, libXxf86dga-devel, libXxf86vm-devel
-%{?_with_sdl:BuildRequires: SDL-devel}
+Summary:        68k Macintosh emulator
+Name:           BasiliskII
+Version:        1.0
+Release:        0.%{date}.4%{?dist}
+License:        GPLv2+
+URL:            http://basilisk.cebix.net/
+# GRRR github, no url ...
+Source0:        macemu-master.zip
+Source1:        http://cxmon.cebix.net/downloads/cxmon-%{mon_version}.tar.gz
+Source2:        BasiliskII.png
+Patch0:         BasiliskII-debuginfo.patch
+Patch1:         BasiliskII-disk-scan-crash.patch
+Patch2:         BasiliskII-SDL-audio.patch
+BuildRequires:  libtool gcc-c++ gtk2-devel
+BuildRequires:  desktop-file-utils readline-devel
+BuildRequires:  libXt-devel libXxf86vm-devel SDL-devel
+Requires:       hicolor-icon-theme
 
 %description
 Basilisk II is an Open Source 68k Macintosh emulator. That is, it enables
@@ -28,38 +25,33 @@ you to run 68k MacOS software on you computer, even if you are using a
 different operating system. However, you still need a copy of MacOS and
 a Macintosh ROM image to use Basilisk II.
 
-Available rebuild options :
---with    : sdl banks
---without : mon
-
 
 %prep
-%setup -q -a 1
-%patch0 -p1 -b .nostrip
-%patch1 -p1 -b .gcc43
-iconv -f ISO_8859-1 -t UTF8 README > README.tmp
-touch -r README README.tmp; mv README.tmp README
-iconv -f ISO_8859-1 -t UTF8 ChangeLog > ChangeLog.tmp
-touch -r ChangeLog ChangeLog.tmp; mv ChangeLog.tmp ChangeLog
+%setup -q -a 1 -n macemu-master
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+iconv -f ISO_8859-1 -t UTF8 BasiliskII/README > README
+touch -r BasiliskII/README README
+iconv -f ISO_8859-1 -t UTF8 BasiliskII/ChangeLog > ChangeLog
+touch -r ChangeLog BasiliskII/ChangeLog
 
 
 %build
-pushd src/Unix
-%configure \
-    --datadir=%{_sysconfdir} \
-    %{?_with_banks:--enable-addressing="banks"} \
-    %{!?_with_banks:--enable-jit-compiler} \
-    %{!?_without_mon: --with-mon=../../cxmon-%{mon_version}/src} \
-    %{?_with_sdl: --enable-sdl-video --enable-sdl-audio}
-%{__make} %{?_smp_mflags}
+pushd BasiliskII/src/Unix
+NO_CONFIGURE=1 ./autogen.sh
+%configure --datadir=%{_sysconfdir} \
+    --with-mon=../../../cxmon-%{mon_version}/src \
+    --disable-xf86-dga --enable-sdl-audio --with-bincue
+make %{?_smp_mflags}
 popd
 
 
 %install
-%{__rm} -rf %{buildroot}
-%makeinstall -C src/Unix \
-    datadir="%{buildroot}%{_sysconfdir}"
-chmod +x %{buildroot}%{_sysconfdir}/%{name}/tunconfig
+pushd BasiliskII/src/Unix
+make install DESTDIR=$RPM_BUILD_ROOT
+popd
+chmod +x $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/tunconfig
 
 # Create the system menu entry
 %{__cat} > %{name}.desktop << EOF
@@ -67,39 +59,56 @@ chmod +x %{buildroot}%{_sysconfdir}/%{name}/tunconfig
 Name=Basilisk II
 Comment=68k Macintosh Emulator
 Exec=BasiliskII
-Icon=BasiliskII.png
+Icon=BasiliskII
 Terminal=false
 Type=Application
 Categories=Game;Emulator;
 EOF
 
-%{__mkdir_p} %{buildroot}%{_datadir}/applications
-desktop-file-install --vendor %{desktop_vendor} \
-    --dir %{buildroot}%{_datadir}/applications \
+mkdir -p $RPM_BUILD_ROOT%{_datadir}/applications
+desktop-file-install --dir $RPM_BUILD_ROOT%{_datadir}/applications \
+%if 0%{?fedora} && 0%{?fedora} < 19
+    --vendor rpmforge \
+%endif
     %{name}.desktop
 
-%{__install} -D -p -m 0644 %{SOURCE2} \
-    %{buildroot}%{_datadir}/pixmaps/BasiliskII.png
+install -D -p -m 0644 %{SOURCE2} \
+    %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/BasiliskII.png
 
 
-%clean
-%{__rm} -rf %{buildroot}
+%post
+touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
+
+%postun
+if [ $1 -eq 0 ] ; then
+    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+fi
+
+%posttrans
+gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %files
-%defattr(-, root, root, 0755)
-%doc ChangeLog COPYING README TECH TODO
+%doc ChangeLog README BasiliskII/COPYING BasiliskII/TECH BasiliskII/TODO
 %dir %{_sysconfdir}/BasiliskII/
 %config(noreplace) %{_sysconfdir}/BasiliskII/fbdevices
 %config(noreplace) %{_sysconfdir}/BasiliskII/keycodes
 %{_sysconfdir}/BasiliskII/tunconfig
 %{_bindir}/BasiliskII
-%{_datadir}/pixmaps/BasiliskII.png
-%{_datadir}/applications/%{desktop_vendor}-%{name}.desktop
+%{_datadir}/icons/hicolor/32x32/apps/BasiliskII.png
+%{_datadir}/applications/*%{name}.desktop
 %{_mandir}/man1/BasiliskII.1*
 
 
 %changelog
+* Sun Mar 10 2013 Hans de Goede <j.w.r.degoede@gmail.com> - 1.0-0.20130310.4
+- New upstream: http://basilisk.cebix.net/
+- Uses github, no source tarbals :| Update to todays git master (bbc0af47)
+- Modernize spec
+- Fix FTBFS (since F-11 !)
+- Switch from esound (deprecated / obsolete) to SDL for sound output
+
 * Sun Mar 03 2013 Nicolas Chauvet <kwizart@gmail.com> - 1.0-0.20060501.3.4
 - Mass rebuilt for Fedora 19 Features
 
