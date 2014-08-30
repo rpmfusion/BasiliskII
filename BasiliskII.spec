@@ -4,7 +4,7 @@
 Summary:        68k Macintosh emulator
 Name:           BasiliskII
 Version:        1.0
-Release:        0.%{date}.4%{?dist}
+Release:        0.%{date}.4%{?dist}.1
 License:        GPLv2+
 URL:            http://basilisk.cebix.net/
 # GRRR github, no url ...
@@ -102,6 +102,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sat Aug 30 2014 Sérgio Basto <sergio@serjux.com> - 1.0-0.20130310.4.1
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
 * Sun Mar 10 2013 Hans de Goede <j.w.r.degoede@gmail.com> - 1.0-0.20130310.4
 - New upstream: http://basilisk.cebix.net/
 - Uses github, no source tarbals :| Update to todays git master (bbc0af47)
