@@ -1,19 +1,19 @@
-%define date 20130310
+%define date 20150516
 %define mon_version 3.2
 
 Summary:        68k Macintosh emulator
 Name:           BasiliskII
 Version:        1.0
-Release:        0.%{date}.4%{?dist}.1
+Release:        0.%{date}.5%{?dist}
 License:        GPLv2+
 URL:            http://basilisk.cebix.net/
 # GRRR github, no url ...
 Source0:        macemu-master.zip
-Source1:        http://cxmon.cebix.net/downloads/cxmon-%{mon_version}.tar.gz
+Source1:        cxmon-3.2-cvs20130310.tar.gz
 Source2:        BasiliskII.png
-Patch0:         BasiliskII-debuginfo.patch
-Patch1:         BasiliskII-disk-scan-crash.patch
-Patch2:         BasiliskII-SDL-audio.patch
+# Patch 10+ because this is for Source1 rather then Source0
+Patch10:        cxmon-3.2-hide-symbols.patch
+Patch11:        cxmon-3.2-strfmt.patch
 BuildRequires:  libtool gcc-c++ gtk2-devel
 BuildRequires:  desktop-file-utils readline-devel
 BuildRequires:  libXt-devel libXxf86vm-devel SDL-devel
@@ -28,9 +28,10 @@ a Macintosh ROM image to use Basilisk II.
 
 %prep
 %setup -q -a 1 -n macemu-master
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+pushd cxmon-%{mon_version}
+%patch10 -p1
+%patch11 -p1
+popd
 iconv -f ISO_8859-1 -t UTF8 BasiliskII/README > README
 touch -r BasiliskII/README README
 iconv -f ISO_8859-1 -t UTF8 BasiliskII/ChangeLog > ChangeLog
@@ -49,7 +50,7 @@ popd
 
 %install
 pushd BasiliskII/src/Unix
-make install DESTDIR=$RPM_BUILD_ROOT
+%make_install
 popd
 chmod +x $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/tunconfig
 
@@ -102,6 +103,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sat May 16 2015 Hans de Goede <j.w.r.degoede@gmail.com> - 1.0-0.20150516.5
+- BasiliskII git snapshot du-jour
+- Fix FTBFS (rf#3633)
+
 * Sat Aug 30 2014 Sérgio Basto <sergio@serjux.com> - 1.0-0.20130310.4.1
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 
