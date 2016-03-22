@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component type="desktop">
+  <id>BasiliskII.desktop</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-2.0+</project_license>
+  <name>Basilisk II</name>
+  <summary>68k Macintosh Emulator</summary>
+  <description>
+    <p>
+      Basilisk II is an Open Source 68k Macintosh emulator. That is,
+      it allows you to run 68k MacOS software on your computer, even if you
+      are using a different operating system.
+    </p>
+    <p>
+      However, you still need a copy of MacOS and a Macintosh ROM image to
+      use Basilisk II.
+    </p>
+  </description>
+  <url type="homepage">http://basilisk.cebix.net/</url>
+  <screenshots>
+    <screenshot type="default">https://upload.wikimedia.org/wikipedia/en/b/bb/Basilisk_snapshot9.png</screenshot>
+  </screenshots>
+  <updatecontact>jwrdegoede_at_gmail.com</updatecontact>
+</component>

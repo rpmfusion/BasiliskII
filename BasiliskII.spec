@@ -1,21 +1,26 @@
-%define date 20150516
-%define mon_version 3.2
+%global commit b58a9260bd1422a28e4c0b7b6bb71d26603bc3e1
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%define date 20160322
 
 Summary:        68k Macintosh emulator
 Name:           BasiliskII
 Version:        1.0
-Release:        0.%{date}.5%{?dist}
+Release:        0.%{date}.6%{?dist}
 License:        GPLv2+
 URL:            http://basilisk.cebix.net/
-# GRRR github, no url ...
-Source0:        macemu-master.zip
-Source1:        cxmon-3.2-cvs20130310.tar.gz
+Source0:        https://github.com/cebix/macemu/archive/%{commit}/%{name}-%{version}-%{shortcommit}.tar.gz
+Source1:        BasiliskII.desktop
 Source2:        BasiliskII.png
-# Patch 10+ because this is for Source1 rather then Source0
+Source3:        BasiliskII.appdata.xml
+Patch0:         macemu-not-finding-cxmon.patch
+# For some reason AC_PATH_XTRA does not work on the rpmfusion buildsys ?
+# I've tried reproducing this with mock on both x86_64 and arm, without success
+patch1:         macemu-work-around-ac_path_xtra-not-working.patch
 Patch10:        cxmon-3.2-hide-symbols.patch
 Patch11:        cxmon-3.2-strfmt.patch
+Patch12:        cxmon-3.2-fpermissive.patch
 BuildRequires:  libtool gcc-c++ gtk2-devel
-BuildRequires:  desktop-file-utils readline-devel
+BuildRequires:  desktop-file-utils libappstream-glib readline-devel
 BuildRequires:  libXt-devel libXxf86vm-devel SDL-devel
 Requires:       hicolor-icon-theme
 
@@ -27,22 +32,28 @@ a Macintosh ROM image to use Basilisk II.
 
 
 %prep
-%setup -q -a 1 -n macemu-master
-pushd cxmon-%{mon_version}
+%setup -q -n macemu-%{commit}
+%patch0 -p1
+%patch1 -p1
 %patch10 -p1
 %patch11 -p1
-popd
+%patch12 -p1
+# cleanup
 iconv -f ISO_8859-1 -t UTF8 BasiliskII/README > README
 touch -r BasiliskII/README README
 iconv -f ISO_8859-1 -t UTF8 BasiliskII/ChangeLog > ChangeLog
 touch -r ChangeLog BasiliskII/ChangeLog
+sed -i 's/\r//' BasiliskII/src/Unix/tinyxml2.cpp
+chmod -x BasiliskII/src/Unix/tinyxml2.cpp BasiliskII/src/Unix/tinyxml2.h
+# autogen
+pushd BasiliskII/src/Unix
+NO_CONFIGURE=1 ./autogen.sh
+popd
 
 
 %build
 pushd BasiliskII/src/Unix
-NO_CONFIGURE=1 ./autogen.sh
 %configure --datadir=%{_sysconfdir} \
-    --with-mon=../../../cxmon-%{mon_version}/src \
     --disable-xf86-dga --enable-sdl-audio --with-bincue
 make %{?_smp_mflags}
 popd
@@ -54,27 +65,16 @@ pushd BasiliskII/src/Unix
 popd
 chmod +x $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/tunconfig
 
-# Create the system menu entry
-%{__cat} > %{name}.desktop << EOF
-[Desktop Entry]
-Name=Basilisk II
-Comment=68k Macintosh Emulator
-Exec=BasiliskII
-Icon=BasiliskII
-Terminal=false
-Type=Application
-Categories=Game;Emulator;
-EOF
-
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/applications
-desktop-file-install --dir $RPM_BUILD_ROOT%{_datadir}/applications \
-%if 0%{?fedora} && 0%{?fedora} < 19
-    --vendor rpmforge \
-%endif
-    %{name}.desktop
+desktop-file-install --dir $RPM_BUILD_ROOT%{_datadir}/applications %{SOURCE1}
 
 install -D -p -m 0644 %{SOURCE2} \
-    %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/BasiliskII.png
+    %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/BasiliskII.png
+
+install -D -p -m 0644 %{SOURCE3} \
+    %{buildroot}%{_datadir}/appdata/%{name}.appdata.xml
+appstream-util validate-relax --nonet \
+    %{buildroot}%{_datadir}/appdata/%{name}.appdata.xml
 
 
 %post
@@ -91,18 +91,27 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %files
-%doc ChangeLog README BasiliskII/COPYING BasiliskII/TECH BasiliskII/TODO
+%doc ChangeLog README BasiliskII/TECH BasiliskII/TODO
+%license BasiliskII/COPYING
 %dir %{_sysconfdir}/BasiliskII/
 %config(noreplace) %{_sysconfdir}/BasiliskII/fbdevices
 %config(noreplace) %{_sysconfdir}/BasiliskII/keycodes
 %{_sysconfdir}/BasiliskII/tunconfig
 %{_bindir}/BasiliskII
-%{_datadir}/icons/hicolor/32x32/apps/BasiliskII.png
-%{_datadir}/applications/*%{name}.desktop
+%{_datadir}/appdata/%{name}.appdata.xml
+%{_datadir}/applications/%{name}.desktop
+%{_datadir}/icons/hicolor/128x128/apps/BasiliskII.png
 %{_mandir}/man1/BasiliskII.1*
 
 
 %changelog
+* Tue Mar 22 2016 Hans de Goede <j.w.r.degoede@gmail.com> - 1.0-0.20160322.6
+- BasiliskII git snapshot du-jour
+- Use proper github download URL
+- New version comes with bundled cxmon
+- Add appdata
+- Add a workaround for FTBFS weirdness in rpmfusion buildsys (rf#3633)
+
 * Sat May 16 2015 Hans de Goede <j.w.r.degoede@gmail.com> - 1.0-0.20150516.5
 - BasiliskII git snapshot du-jour
 - Fix FTBFS (rf#3633)

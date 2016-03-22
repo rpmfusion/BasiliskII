@@ -1,0 +1,24 @@
+diff -up macemu-b58a9260bd1422a28e4c0b7b6bb71d26603bc3e1/cxmon/src/mon.cpp~ macemu-b58a9260bd1422a28e4c0b7b6bb71d26603bc3e1/cxmon/src/mon.cpp
+--- macemu-b58a9260bd1422a28e4c0b7b6bb71d26603bc3e1/cxmon/src/mon.cpp~	2016-03-22 10:27:20.000000000 +0100
++++ macemu-b58a9260bd1422a28e4c0b7b6bb71d26603bc3e1/cxmon/src/mon.cpp	2016-03-22 10:30:18.671721029 +0100
+@@ -1112,7 +1112,7 @@ void mon_exit()
+  *  Main function, read-execute loop
+  */
+ 
+-void mon(int argc, char **argv)
++void mon(int argc, const char **argv)
+ {
+ 	bool done = false, interactive = true;
+ 
+diff -up macemu-b58a9260bd1422a28e4c0b7b6bb71d26603bc3e1/cxmon/src/mon.h~ macemu-b58a9260bd1422a28e4c0b7b6bb71d26603bc3e1/cxmon/src/mon.h
+--- macemu-b58a9260bd1422a28e4c0b7b6bb71d26603bc3e1/cxmon/src/mon.h~	2016-01-31 16:00:57.000000000 +0100
++++ macemu-b58a9260bd1422a28e4c0b7b6bb71d26603bc3e1/cxmon/src/mon.h	2016-03-22 10:30:19.137721654 +0100
+@@ -30,7 +30,7 @@
+ 
+ void mon_init();
+ void mon_exit();
+-void mon(int argc, char **argv);
++void mon(int argc, const char **argv);
+ 
+ 
+ /*

@@ -1,0 +1,18 @@
+diff -up macemu-b58a9260bd1422a28e4c0b7b6bb71d26603bc3e1/BasiliskII/src/Unix/configure.ac~ macemu-b58a9260bd1422a28e4c0b7b6bb71d26603bc3e1/BasiliskII/src/Unix/configure.ac
+--- macemu-b58a9260bd1422a28e4c0b7b6bb71d26603bc3e1/BasiliskII/src/Unix/configure.ac~	2016-03-22 11:48:55.000000000 +0100
++++ macemu-b58a9260bd1422a28e4c0b7b6bb71d26603bc3e1/BasiliskII/src/Unix/configure.ac	2016-03-22 12:29:16.833752359 +0100
+@@ -254,13 +254,7 @@ fi
+ 
+ dnl We need X11, if not using SDL.
+ if [[ "x$WANT_SDL_VIDEO" = "xno" ]]; then
+-  AC_PATH_XTRA
+-  if [[ "x$no_x" = "xyes" ]]; then
+-    AC_MSG_ERROR([You need X11 to run Basilisk II.])
+-  fi
+-  CFLAGS="$CFLAGS $X_CFLAGS"
+-  CXXFLAGS="$CXXFLAGS $X_CFLAGS"
+-  LIBS="$LIBS $X_PRE_LIBS $X_LIBS -lX11 -lXext $X_EXTRA_LIBS"
++  LIBS="$LIBS -lX11 -lXext"
+ fi
+ 
+ dnl BINCUE
