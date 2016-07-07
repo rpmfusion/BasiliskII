@@ -54,6 +54,7 @@ popd
 
 %build
 pushd %{name}/src/Unix
+mkdir obj
 %configure --datadir=%{_sysconfdir} \
     --disable-xf86-dga --enable-sdl-audio --with-bincue
 make %{?_smp_mflags}
