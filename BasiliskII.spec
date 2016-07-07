@@ -8,14 +8,15 @@ Version:        1.0
 Release:        0.%{date}.6%{?dist}
 License:        GPLv2+
 URL:            http://basilisk.cebix.net/
-Source0:        https://github.com/cebix/macemu/archive/%{commit}/%{name}-%{version}-%{shortcommit}.tar.gz
-Source1:        BasiliskII.desktop
-Source2:        BasiliskII.png
-Source3:        BasiliskII.appdata.xml
+Source0:        https://github.com/cebix/macemu/archive/%{commit}/BasiliskII-1.0-%{shortcommit}.tar.gz
+Source1:        %{name}.desktop
+Source2:        %{name}.png
+Source3:        %{name}.appdata.xml
 Patch0:         macemu-not-finding-cxmon.patch
 # For some reason AC_PATH_XTRA does not work on the rpmfusion buildsys ?
 # I've tried reproducing this with mock on both x86_64 and arm, without success
-patch1:         macemu-work-around-ac_path_xtra-not-working.patch
+Patch1:         macemu-work-around-ac_path_xtra-not-working.patch
+# Patch 10+ because these are for cxmon
 Patch10:        cxmon-3.2-hide-symbols.patch
 Patch11:        cxmon-3.2-strfmt.patch
 Patch12:        cxmon-3.2-fpermissive.patch
@@ -39,20 +40,20 @@ a Macintosh ROM image to use Basilisk II.
 %patch11 -p1
 %patch12 -p1
 # cleanup
-iconv -f ISO_8859-1 -t UTF8 BasiliskII/README > README
-touch -r BasiliskII/README README
-iconv -f ISO_8859-1 -t UTF8 BasiliskII/ChangeLog > ChangeLog
-touch -r ChangeLog BasiliskII/ChangeLog
-sed -i 's/\r//' BasiliskII/src/Unix/tinyxml2.cpp
-chmod -x BasiliskII/src/Unix/tinyxml2.cpp BasiliskII/src/Unix/tinyxml2.h
+iconv -f ISO_8859-1 -t UTF8 %{name}/README > README
+touch -r %{name}/README README
+iconv -f ISO_8859-1 -t UTF8 %{name}/ChangeLog > ChangeLog
+touch -r ChangeLog %{name}/ChangeLog
+sed -i 's/\r//' %{name}/src/Unix/tinyxml2.cpp
+chmod -x %{name}/src/Unix/tinyxml2.cpp %{name}/src/Unix/tinyxml2.h
 # autogen
-pushd BasiliskII/src/Unix
+pushd %{name}/src/Unix
 NO_CONFIGURE=1 ./autogen.sh
 popd
 
 
 %build
-pushd BasiliskII/src/Unix
+pushd %{name}/src/Unix
 %configure --datadir=%{_sysconfdir} \
     --disable-xf86-dga --enable-sdl-audio --with-bincue
 make %{?_smp_mflags}
@@ -60,7 +61,7 @@ popd
 
 
 %install
-pushd BasiliskII/src/Unix
+pushd %{name}/src/Unix
 %make_install
 popd
 chmod +x $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/tunconfig
@@ -69,7 +70,7 @@ mkdir -p $RPM_BUILD_ROOT%{_datadir}/applications
 desktop-file-install --dir $RPM_BUILD_ROOT%{_datadir}/applications %{SOURCE1}
 
 install -D -p -m 0644 %{SOURCE2} \
-    %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/BasiliskII.png
+    %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{name}.png
 
 install -D -p -m 0644 %{SOURCE3} \
     %{buildroot}%{_datadir}/appdata/%{name}.appdata.xml
@@ -91,17 +92,17 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %files
-%doc ChangeLog README BasiliskII/TECH BasiliskII/TODO
-%license BasiliskII/COPYING
-%dir %{_sysconfdir}/BasiliskII/
-%config(noreplace) %{_sysconfdir}/BasiliskII/fbdevices
-%config(noreplace) %{_sysconfdir}/BasiliskII/keycodes
-%{_sysconfdir}/BasiliskII/tunconfig
-%{_bindir}/BasiliskII
+%doc ChangeLog README %{name}/TECH %{name}/TODO
+%license %{name}/COPYING
+%dir %{_sysconfdir}/%{name}/
+%config(noreplace) %{_sysconfdir}/%{name}/fbdevices
+%config(noreplace) %{_sysconfdir}/%{name}/keycodes
+%{_sysconfdir}/%{name}/tunconfig
+%{_bindir}/%{name}
 %{_datadir}/appdata/%{name}.appdata.xml
 %{_datadir}/applications/%{name}.desktop
-%{_datadir}/icons/hicolor/128x128/apps/BasiliskII.png
-%{_mandir}/man1/BasiliskII.1*
+%{_datadir}/icons/hicolor/128x128/apps/%{name}.png
+%{_mandir}/man1/%{name}.1*
 
 
 %changelog
