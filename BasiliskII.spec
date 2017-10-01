@@ -1,18 +1,17 @@
-%global commit b58a9260bd1422a28e4c0b7b6bb71d26603bc3e1
+%global commit e273bb1a0b4f6e35bcdbf6cf918aa0ca3e6d99da
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%define date 20160322
+%define date 20171001
 
 Summary:        68k Macintosh emulator
 Name:           BasiliskII
 Version:        1.0
-Release:        0.%{date}.6%{?dist}.2
+Release:        0.%{date}.7%{?dist}
 License:        GPLv2+
 URL:            http://basilisk.cebix.net/
 Source0:        https://github.com/cebix/macemu/archive/%{commit}/BasiliskII-1.0-%{shortcommit}.tar.gz
 Source1:        %{name}.desktop
 Source2:        %{name}.png
 Source3:        %{name}.appdata.xml
-Patch0:         macemu-not-finding-cxmon.patch
 # For some reason AC_PATH_XTRA does not work on the rpmfusion buildsys ?
 # I've tried reproducing this with mock on both x86_64 and arm, without success
 Patch1:         macemu-work-around-ac_path_xtra-not-working.patch
@@ -33,12 +32,7 @@ a Macintosh ROM image to use Basilisk II.
 
 
 %prep
-%setup -q -n macemu-%{commit}
-%patch0 -p1
-%patch1 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
+%autosetup -p1 -n macemu-%{commit}
 # cleanup
 iconv -f ISO_8859-1 -t UTF8 %{name}/README > README
 touch -r %{name}/README README
@@ -107,6 +101,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sun Oct  1 2017 Hans de Goede <j.w.r.degoede@gmail.com> - 1.0-0.20171001.7
+- BasiliskII git snapshot du-jour
+- Fix FTBFS on F27+
+
 * Thu Aug 31 2017 RPM Fusion Release Engineering <kwizart@rpmfusion.org> - 1.0-0.20160322.6.2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
 
