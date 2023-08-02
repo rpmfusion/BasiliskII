@@ -5,7 +5,7 @@
 Summary:        68k Macintosh emulator
 Name:           BasiliskII
 Version:        1.0
-Release:        0.%{date}.7%{?dist}.10
+Release:        0.%{date}.7%{?dist}.11
 License:        GPLv2+
 URL:            http://basilisk.cebix.net/
 Source0:        https://github.com/cebix/macemu/archive/%{commit}/BasiliskII-1.0-%{shortcommit}.tar.gz
@@ -101,6 +101,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Wed Aug 02 2023 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 1.0-0.20171001.7.11
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
+
 * Sat Aug 06 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 1.0-0.20171001.7.10
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild and ffmpeg
   5.1
