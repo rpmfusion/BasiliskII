@@ -1,27 +1,28 @@
-%global commit e273bb1a0b4f6e35bcdbf6cf918aa0ca3e6d99da
+%global commit 96e512bd6376e78a2869f16dcc8a9028bce5ee72
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%define date 20171001
+%define date 20250106
 
 Summary:        68k Macintosh emulator
 Name:           BasiliskII
 Version:        1.0
-Release:        0.%{date}.7%{?dist}.15
+Release:        0.%{date}.8%{?dist}
 License:        GPLv2+
 URL:            http://basilisk.cebix.net/
 Source0:        https://github.com/cebix/macemu/archive/%{commit}/BasiliskII-1.0-%{shortcommit}.tar.gz
 Source1:        %{name}.desktop
 Source2:        %{name}.png
 Source3:        %{name}.appdata.xml
-# For some reason AC_PATH_XTRA does not work on the rpmfusion buildsys ?
-# I've tried reproducing this with mock on both x86_64 and arm, without success
-Patch1:         macemu-work-around-ac_path_xtra-not-working.patch
 # Patch 10+ because these are for cxmon
 Patch10:        cxmon-3.2-hide-symbols.patch
-Patch11:        cxmon-3.2-strfmt.patch
-Patch12:        cxmon-3.2-fpermissive.patch
-BuildRequires:  libtool gcc-c++ gtk2-devel
-BuildRequires:  desktop-file-utils libappstream-glib readline-devel
-BuildRequires:  libXt-devel libXxf86vm-devel SDL-devel
+BuildRequires:  libtool
+BuildRequires:  gcc-c++
+BuildRequires:  gtk2-devel
+BuildRequires:  desktop-file-utils
+BuildRequires:  libappstream-glib
+BuildRequires:  readline-devel
+BuildRequires:  libXt-devel
+BuildRequires:  libXxf86vm-devel
+BuildRequires:  SDL-devel
 Requires:       hicolor-icon-theme
 
 %description
@@ -34,8 +35,8 @@ a Macintosh ROM image to use Basilisk II.
 %prep
 %autosetup -p1 -n macemu-%{commit}
 # cleanup
-iconv -f ISO_8859-1 -t UTF8 %{name}/README > README
-touch -r %{name}/README README
+# iconv -f ISO_8859-1 -t UTF8 %{name}/README > README
+# touch -r %{name}/README README
 iconv -f ISO_8859-1 -t UTF8 %{name}/ChangeLog > ChangeLog
 touch -r ChangeLog %{name}/ChangeLog
 sed -i 's/\r//' %{name}/src/Unix/tinyxml2.cpp
@@ -51,7 +52,7 @@ pushd %{name}/src/Unix
 mkdir obj
 %configure --datadir=%{_sysconfdir} \
     --disable-xf86-dga --enable-sdl-audio --with-bincue
-make %{?_smp_mflags}
+%make_build
 popd
 
 
@@ -73,21 +74,8 @@ appstream-util validate-relax --nonet \
     %{buildroot}%{_datadir}/appdata/%{name}.appdata.xml
 
 
-%post
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-%postun
-if [ $1 -eq 0 ] ; then
-    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-%posttrans
-gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-
-
 %files
-%doc ChangeLog README %{name}/TECH %{name}/TODO
+%doc ChangeLog README.md %{name}/TECH %{name}/TODO
 %license %{name}/COPYING
 %dir %{_sysconfdir}/%{name}/
 %config(noreplace) %{_sysconfdir}/%{name}/fbdevices
@@ -101,6 +89,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Wed Feb 05 2025 Sérgio Basto <sergio@serjux.com> - 1.0-0.20250106.8
+- Update to the latest commit made at 20250106
+- Minor cleanup
+
 * Tue Jan 28 2025 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 1.0-0.20171001.7.15
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_42_Mass_Rebuild
 
